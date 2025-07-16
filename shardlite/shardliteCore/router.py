@@ -148,6 +148,12 @@ class Router:
         Raises:
             ValueError: If parameters are invalid
             sqlite3.Error: If database operation fails
+             
+        Note:
+            If `key` is provided, it only determines which shard to query.
+            If you want to select a specific row, always provide a `where` clause
+            (e.g., `where={'id': key}`) to filter the results. Otherwise, all rows
+            in the shard will be returned.
         """
         if not table or not isinstance(table, str):
             raise ValueError("table must be a non-empty string")
