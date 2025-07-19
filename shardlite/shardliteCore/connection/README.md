@@ -1,5 +1,7 @@
 # Connection Management Module
 
+> **Note:** Always call `shutdown()` on the manager (or use the API’s `shutdown()` function) before deleting or moving database files, especially on Windows, to ensure all connections are closed and files can be safely removed.
+
 This module provides SQLite connection pooling and management for Shardlite, ensuring efficient database connections across all shards.
 
 ## Overview
