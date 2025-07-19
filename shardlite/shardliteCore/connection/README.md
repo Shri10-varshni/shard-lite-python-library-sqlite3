@@ -107,8 +107,8 @@ for shard_id, pool in pools.items():
 
 ### Connection Pool Settings
 
-- **max_connections**: Maximum number of connections in the pool (default: 10)
-- **timeout**: Connection timeout in seconds (default: 30)
+- **max_connections**: Hard limit on active connections (not pool size) (default: 10)
+- **timeout**: Connection timeout in seconds when pool is exhausted (default: 30)
 - **check_same_thread**: Whether to check if connections are used in same thread (default: False)
 
 ### SQLite Configuration
