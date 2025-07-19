@@ -29,8 +29,8 @@ class ConnectionPool:
     
     Attributes:
         db_path (str): Path to the SQLite database file
-        max_connections (int): Maximum number of connections in the pool
-        timeout (int): Connection timeout in seconds
+        max_connections (int): Hard limit on active connections (not pool size)
+        timeout (int): Connection timeout in seconds when pool is exhausted
     """
     
     def __init__(
@@ -45,8 +45,8 @@ class ConnectionPool:
         
         Args:
             db_path: Path to the SQLite database file
-            max_connections: Maximum number of connections in the pool
-            timeout: Connection timeout in seconds
+            max_connections: Hard limit on active connections (not pool size)
+            timeout: Connection timeout in seconds when pool is exhausted
             check_same_thread: Whether to check if connections are used in same thread
             
         Raises:
@@ -83,7 +83,7 @@ class ConnectionPool:
             sqlite3.Connection: Available connection from pool
             
         Raises:
-            TimeoutError: If no connection is available within timeout
+            TimeoutError: If no connection is available within timeout (when max_connections reached)
             sqlite3.Error: If connection creation fails
         """
         with self._lock:
