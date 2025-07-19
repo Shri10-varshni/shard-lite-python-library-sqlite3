@@ -9,6 +9,7 @@ venv/
 
 # Example and test data
 test_data_*/
+testing_data/
 example_data/
 
 # Editor/IDE settings
