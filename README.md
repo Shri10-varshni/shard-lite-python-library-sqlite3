@@ -28,6 +28,8 @@ Shardlite provides a unified, extensible API for sharding SQLite databases, addr
 Shardlite is organized into clear layers, each with specific responsibilities:
 
 ### Layer Responsibilities
+<img width="721" height="649" alt="image" src="https://github.com/user-attachments/assets/fc2e8cd9-394b-4029-aff3-8c57b9a5e378" />
+
 <aside>
 
 - **API Layer**
@@ -59,6 +61,7 @@ Shardlite is organized into clear layers, each with specific responsibilities:
 ---
 
 ## ⚙️ Workflow
+<img width="696" height="528" alt="image" src="https://github.com/user-attachments/assets/b344e6a6-7500-4d86-9a26-268fe6ba6144" />
 
 <aside>
 
@@ -86,7 +89,17 @@ Shardlite is organized into clear layers, each with specific responsibilities:
 </aside>
 
 ---
+## 🛡️ Connection Pool
+<img width="432" height="480" alt="image" src="https://github.com/user-attachments/assets/a35c6ce7-5009-4cc9-8c00-8dbb644a6ea8" />
+<aside>
+    
+- Thread-safe connection management
+- Connection reuse to avoid overhead
+- Automatic connection cleanup
+- Configurable pool size and timeouts
+</aside>
 
+---
 
 ## 📚 Example Gallery
 
