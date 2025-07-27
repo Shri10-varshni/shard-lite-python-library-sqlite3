@@ -5,7 +5,7 @@ import time
 import gc
 from uuid import uuid4
 from shardlite.shardliteCore.manager import ShardManager
-from shardlite.shardliteCore.router import Router
+from shardlite.shardliteCore.router.router import Router
 from shardlite.shardliteCore.strategy.hash_strategy import HashShardingStrategy
 from shardlite.shardliteCore.config import ShardliteConfig
 
