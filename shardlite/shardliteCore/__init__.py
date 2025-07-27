@@ -89,14 +89,14 @@ from .transaction.logger import (
 )
 from .transaction.coordinator import (
     ParallelTransactionCoordinator,
-    TransactionContext,
+    Transaction,
 )
 
 # Connection classes
 from .connection.pool import ConnectionPool
 
 # Router class
-from .router import Router
+from .router.router import Router
 
 # Utility functions
 from .utils.helpers import (
@@ -165,7 +165,7 @@ __all__ = [
     "NullTransactionLogger",
     "TransactionMetrics",
     "ParallelTransactionCoordinator",
-    "TransactionContext",
+    "Transaction",
     
     # Connection classes
     "ConnectionPool",
