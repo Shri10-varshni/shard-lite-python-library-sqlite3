@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional, Union
 from .config import ShardliteConfig
 from .strategy.hash_strategy import HashShardingStrategy
 from .strategy.base import ShardingStrategy
-from .router import Router
+from .router.router import Router
 from .transaction.coordinator import ParallelTransactionCoordinator
 from .transaction.logger import TransactionLogger, NullTransactionLogger
 
