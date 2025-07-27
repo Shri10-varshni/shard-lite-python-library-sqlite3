@@ -8,6 +8,15 @@ This module provides SQLite connection pooling and management for Shardlite, ens
 
 The connection module implements a thread-safe connection pool that manages SQLite database connections for each shard. It provides connection reuse, lifecycle management, and performance optimization.
 
+## Working
+
+1. Shardlite creates a separate connection pool for each shard (SQLite file).
+2. Each pool manages multiple connections (up to `max_connections`) to its shard, allowing efficient, concurrent access. 
+3. When a request needs to access a shard, it borrows a connection from the pool; when done, the connection is returned for reuse. 
+This design ensures improved performance and resource management. 
+Note: Consistency and data integrity are ensured by SQLite’s built-in locking mechanism
+- multiple connections can safely read and write, with SQLite serializing writes and preventing corruption.
+
 ## Components
 
 ### ConnectionPool
@@ -268,3 +277,8 @@ Potential improvements:
 2. **Monitor pool stats**: Watch for unusual patterns
 3. **Check file permissions**: Ensure database files are accessible
 4. **Verify thread safety**: Check for concurrent access issues 
+
+## TODO: Distributed Deadlock Handling
+
+- Add support for distributed deadlock detection/avoidance in connection management.
+- To be addressed after core transaction and connection pooling logic is implemented. 
