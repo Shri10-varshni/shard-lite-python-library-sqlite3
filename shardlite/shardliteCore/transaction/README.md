@@ -333,3 +333,9 @@ Potential improvements:
 2. **Monitor metrics**: Track transaction performance and success rates
 3. **Check shard health**: Ensure all shards are accessible
 4. **Review transaction design**: Optimize shard selection and operation grouping 
+
+## TODO: Distributed Deadlock Detection/Avoidance
+
+- Implement distributed deadlock detection/avoidance for cross-shard transactions.
+- Consider global lock ordering, connection acquisition timeouts, and rollback strategies.
+- This will be handled as a future enhancement after core transaction and sharding logic is complete. 
