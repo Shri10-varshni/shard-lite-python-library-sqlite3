@@ -6,31 +6,8 @@ for logging transaction lifecycle events and monitoring transaction status.
 """
 
 from typing import Protocol, Dict, Any, Optional, List
-from enum import Enum
+from .types import TransactionState, TransactionEvent
 from datetime import datetime
-
-
-class TransactionState(Enum):
-    """Enumeration of transaction states."""
-    INITIAL = "initial"
-    PREPARING = "preparing"
-    PREPARED = "prepared"
-    COMMITTING = "committing"
-    COMMITTED = "committed"
-    ROLLING_BACK = "rolling_back"
-    ROLLED_BACK = "rolled_back"
-    FAILED = "failed"
-
-
-class TransactionEvent(Enum):
-    """Enumeration of transaction events."""
-    BEGIN = "begin"
-    PREPARE = "prepare"
-    VOTE = "vote"
-    COMMIT = "commit"
-    ROLLBACK = "rollback"
-    COMPLETE = "complete"
-    ERROR = "error"
 
 
 class TransactionLogger(Protocol):
