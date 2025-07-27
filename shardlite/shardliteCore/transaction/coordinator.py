@@ -10,61 +10,9 @@ import threading
 import uuid
 from typing import Dict, List, Any, Optional, Callable, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from .logger import TransactionLogger, TransactionState, NullTransactionLogger
-
-
-class TransactionContext:
-    """
-    Context for managing a cross-shard transaction.
-    
-    This class provides a context manager interface for transactions
-    and tracks the transaction state throughout its lifecycle.
-    """
-    
-    def __init__(self, coordinator: 'ParallelTransactionCoordinator', transaction_id: str) -> None:
-        """
-        Initialize transaction context.
-        
-        Args:
-            coordinator: Reference to the transaction coordinator
-            transaction_id: Unique identifier for the transaction
-        """
-        self.coordinator = coordinator
-        self.transaction_id = transaction_id
-        self.state = TransactionState.INITIAL
-        self.start_time = time.time()
-        self.shard_keys: List[int] = []
-        self.operations: List[Callable] = []
-    
-    def add_operation(self, operation: Callable) -> None:
-        """
-        Add an operation to the transaction.
-        
-        Args:
-            operation: Callable to execute during transaction
-        """
-        self.operations.append(operation)
-    
-    def add_shard_key(self, shard_key: int) -> None:
-        """
-        Add a shard key to the transaction scope.
-        
-        Args:
-            shard_key: Shard key to include in transaction
-        """
-        if shard_key not in self.shard_keys:
-            self.shard_keys.append(shard_key)
-    
-    def __enter__(self):
-        """Context manager entry."""
-        return self
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit - commit or rollback transaction."""
-        if exc_type is None:
-            self.coordinator.commit(self)
-        else:
-            self.coordinator.rollback(self)
+from .logger import TransactionLogger, NullTransactionLogger
+from .transaction_states import TransactionState
+from .context import Transaction
 
 
 class ParallelTransactionCoordinator:
@@ -105,10 +53,10 @@ class ParallelTransactionCoordinator:
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         
         # Transaction tracking
-        self.active_transactions: Dict[str, TransactionContext] = {}
+        self.active_transactions: Dict[str, Transaction] = {}
         self.transaction_lock = threading.RLock()
     
-    def begin(self, shard_keys: List[int]) -> TransactionContext:
+    def begin(self, shard_keys: List[int]) -> Transaction:
         """
         Begin a new cross-shard transaction.
         
@@ -116,7 +64,7 @@ class ParallelTransactionCoordinator:
             shard_keys: List of shard keys involved in the transaction
             
         Returns:
-            TransactionContext: Transaction context for managing the transaction
+            Transaction: Transaction context for managing the transaction
             
         Raises:
             ValueError: If shard_keys is empty or invalid
@@ -125,7 +73,7 @@ class ParallelTransactionCoordinator:
             raise ValueError("shard_keys cannot be empty")
         
         transaction_id = str(uuid.uuid4())
-        context = TransactionContext(self, transaction_id)
+        context = Transaction(self, transaction_id)
         context.shard_keys = shard_keys.copy()
         context.state = TransactionState.INITIAL
         
@@ -134,7 +82,7 @@ class ParallelTransactionCoordinator:
         
         return context
     
-    def prepare(self, context: TransactionContext) -> bool:
+    def prepare(self, context: Transaction) -> bool:
         """
         Execute prepare phase of 2PC protocol.
         
@@ -163,7 +111,7 @@ class ParallelTransactionCoordinator:
         
         return all_prepared
     
-    def commit(self, context: TransactionContext) -> bool:
+    def commit(self, context: Transaction) -> bool:
         """
         Commit the transaction.
         
@@ -204,7 +152,7 @@ class ParallelTransactionCoordinator:
         
         return all_committed
     
-    def rollback(self, context: TransactionContext) -> None:
+    def rollback(self, context: Transaction) -> None:
         """
         Rollback the transaction.
         
@@ -253,7 +201,7 @@ class ParallelTransactionCoordinator:
                 self.logger.on_error(context.transaction_id, e)
                 return False
     
-    def _execute_prepare_phase(self, context: TransactionContext) -> Dict[int, bool]:
+    def _execute_prepare_phase(self, context: Transaction) -> Dict[int, bool]:
         """
         Execute prepare phase on all shards in parallel.
         
@@ -284,7 +232,7 @@ class ParallelTransactionCoordinator:
         
         return prepare_results
     
-    def _execute_commit_phase(self, context: TransactionContext) -> Dict[int, bool]:
+    def _execute_commit_phase(self, context: Transaction) -> Dict[int, bool]:
         """
         Execute commit phase on all shards in parallel.
         
@@ -314,7 +262,7 @@ class ParallelTransactionCoordinator:
         
         return commit_results
     
-    def _execute_rollback_phase(self, context: TransactionContext) -> None:
+    def _execute_rollback_phase(self, context: Transaction) -> None:
         """
         Execute rollback phase on all shards in parallel.
         
@@ -405,7 +353,7 @@ class ParallelTransactionCoordinator:
         except Exception as e:
             self.logger.on_error(transaction_id, e, shard_key=shard_key)
     
-    def _cleanup_transaction(self, context: TransactionContext) -> None:
+    def _cleanup_transaction(self, context: Transaction) -> None:
         """
         Clean up transaction resources.
         
